@@ -7,8 +7,6 @@ Create the PRD with the Product Manager agent
 
 ## Product Manager agent
 
-Smart Ai Agent that helps with elderly care. It tracks vitals and alerts when something is off or needs to be acted on. It's implemented as a web app, with the option to use speech-to-text and text-to-speech to listen and talk to it's users.
-
 Here is the format you should use for generating the PRD
 
 # 📝 Product Requirements Document (PRD)
