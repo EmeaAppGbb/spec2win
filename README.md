@@ -1,6 +1,7 @@
 # spec2win
 
 **Spec2Win** is an AI-powered development workflow that transforms high-level product ideas into production-ready applications deployed on Azure—using specialized GitHub Copilot agents working together.
+
 https://github.com/user-attachments/assets/f0529e70-f437-4a14-93bc-4ab5a0450540
 
 ## 🎯 Overview
