@@ -140,6 +140,32 @@ src/
 └── frontend/           # Frontend implementation
 ```
 
+## 🔧 Managing Standards with Git Subtrees
+
+This repository uses **git subtrees** to integrate engineering standards from external repositories. The `standards/` folder contains subtrees from three separate guideline repositories.
+
+### Adding Subtrees (Initial Setup)
+
+If you're setting up the repository for the first time or adding new subtrees:
+
+```bash
+git subtree add --prefix standards/general https://github.com/EmeaAppGbb/spec2win-guidelines.git main --squash
+git subtree add --prefix standards/frontend https://github.com/EmeaAppGbb/spec2win-guidelines-frontend.git main --squash
+git subtree add --prefix standards/backend https://github.com/EmeaAppGbb/spec2win-guidelines-backend.git main --squash
+```
+
+### Updating Subtrees
+
+To pull the latest changes from the upstream guideline repositories:
+
+```bash
+git subtree pull --prefix standards/general https://github.com/EmeaAppGbb/spec2win-guidelines.git main --squash
+git subtree pull --prefix standards/frontend https://github.com/EmeaAppGbb/spec2win-guidelines-frontend.git main --squash
+git subtree pull --prefix standards/backend https://github.com/EmeaAppGbb/spec2win-guidelines-backend.git main --squash
+```
+
+> **Note**: The `--squash` flag combines all commits from the subtree repository into a single commit, keeping the history clean.
+
 ## 🎓 Example Usage
 
 ```bash
