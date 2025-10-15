@@ -36,10 +36,11 @@ The `.vscode/mcp.json` configures **Model Context Protocol servers** that give a
 - **github** - Repository management and operations
 - **microsoft.docs.mcp** - Official Microsoft/Azure documentation
 - **playwright** - Browser automation capabilities
+- **deepcontext** - Repository context and understanding for external repos
 
 ### AI Agents (Chat Modes)
 
-Three specialized agents in `.github/chatmodes/`:
+Four specialized agents in `.github/chatmodes/`:
 
 #### 1. **PM Agent** (`@pm`) - Product Manager
 - **Model**: o3-mini
@@ -47,13 +48,20 @@ Three specialized agents in `.github/chatmodes/`:
 - **Purpose**: Translates ideas into structured PRDs and FRDs
 - **Instructions**: Asks clarifying questions, identifies business goals, creates living documentation
 
-#### 2. **Dev Agent** (`@dev`) - Developer
+#### 2. **Dev Lead Agent** (`@dev-lead`) - Technical Lead
+- **Model**: Claude Sonnet 4
+- **Tools**: Read files, search, semantic analysis
+- **Purpose**: Reads all standards from `standards/` and generates comprehensive `AGENTS.md`
+- **Instructions**: Analyzes engineering standards, creates unified agent guidelines, establishes coding patterns
+- **Usage**: Run `/generate-agents` at project start (can defer until before `/plan` and `/implement`)
+
+#### 3. **Dev Agent** (`@dev`) - Developer
 - **Model**: Claude Sonnet 4
 - **Tools**: Full development suite + Context7, GitHub, Microsoft Docs, Copilot Coding Agent, AI Toolkit
 - **Purpose**: Breaks down features into tasks, implements code, or delegates to GitHub Copilot
 - **Instructions**: Analyzes specs, writes modular code, follows architectural patterns, creates GitHub issues
 
-#### 3. **Azure Agent** (`@azure`) - Cloud Architect
+#### 4. **Azure Agent** (`@azure`) - Cloud Architect
 - **Model**: Claude Sonnet 4
 - **Tools**: Azure resource management, Bicep, deployment tools, infrastructure best practices
 - **Purpose**: Deploys applications to Azure with IaC and CI/CD pipelines
@@ -69,7 +77,9 @@ graph TB
     
     PRD --> FRD["<b>/frd</b><br/>📋 PM Agent breaks down<br/>Feature Requirements Documents"]
     
-    FRD --> Plan["<b>/plan</b><br/>🔧 Dev Agent creates<br/>Technical Task Breakdown"]
+    FRD --> GenAgents["<b>/generate-agents</b><br/>🎯 Dev Lead reads standards<br/>& generates AGENTS.md<br/>(optional, before /plan)"]
+    
+    GenAgents --> Plan["<b>/plan</b><br/>🔧 Dev Agent creates<br/>Technical Task Breakdown"]
     
     Plan --> Choice{"Implementation<br/>Choice"}
     
@@ -86,6 +96,7 @@ graph TB
     style Start fill:#e1f5ff
     style PRD fill:#fff4e6
     style FRD fill:#fff4e6
+    style GenAgents fill:#e3f2fd
     style Plan fill:#e8f5e9
     style Implement fill:#e8f5e9
     style Delegate fill:#e8f5e9
@@ -106,16 +117,22 @@ graph TB
    - Creates files in `specs/features/` for each feature
    - Defines inputs, outputs, dependencies, and acceptance criteria
 
-3. **`/plan`** - Technical Planning
+3. **`/generate-agents`** - Generate Agent Guidelines (Optional)
+   - Dev Lead Agent reads all standards from `standards/` directory
+   - Consolidates engineering standards into comprehensive `AGENTS.md`
+   - Can be run at project start or deferred until before `/plan` and `/implement`
+   - **Must be completed before planning and implementation begins**
+
+4. **`/plan`** - Technical Planning
    - Dev Agent analyzes FRDs and creates technical task breakdowns
    - Creates files in `specs/tasks/` with implementation details
    - Identifies dependencies, estimates complexity, defines scaffolding needs
 
-4. **`/implement`** OR **`/delegate`** - Implementation
+5. **`/implement`** OR **`/delegate`** - Implementation
    - **Option A (`/implement`)**: Dev Agent writes code directly in `src/backend` and `src/frontend`
    - **Option B (`/delegate`)**: Dev Agent creates GitHub Issues with full task descriptions and assigns to GitHub Copilot Coding Agent
    
-5. **`/deploy`** - Azure Deployment
+6. **`/deploy`** - Azure Deployment
    - Azure Agent analyzes the codebase
    - Generates Bicep IaC templates
    - Creates GitHub Actions workflows for CI/CD
@@ -138,33 +155,90 @@ specs/
 src/
 ├── backend/            # Backend implementation
 └── frontend/           # Frontend implementation
+
+standards/
+├── general/            # General engineering standards
+├── backend/            # Backend-specific standards
+└── frontend/           # Frontend-specific standards
+
+AGENTS.md               # Consolidated agent guidelines (generated)
+mkdocs.yml              # MKdocs configuration for documentation site
+docs/                   # MKdocs documentation source files
 ```
+
+### Documentation with MKdocs
+
+This repository is configured with **MKdocs** for generating beautiful project documentation:
+
+- **Configuration**: `mkdocs.yml` contains site settings and navigation
+- **Source Files**: Documentation markdown files in `docs/` directory
+- **Standards**: Documentation practices defined in `standards/general/documentation-guidelines.md`
+- **Build & Serve**: Use MKdocs commands to preview and deploy documentation
+
+The documentation standards ensure consistency, accessibility, and maintainability across all project documentation.
 
 ## 🔧 Managing Standards with Git Subtrees
 
 This repository uses **git subtrees** to integrate engineering standards from external repositories. The `standards/` folder contains subtrees from three separate guideline repositories.
 
+### Technology-Specific Standards via Branches
+
+Each standards repository uses **branches** to organize technology-specific rules:
+
+- **Backend Standards**: Choose between `dotnet` or `python` branches
+- **Frontend Standards**: Choose between `react`, `angular`, or other framework branches
+- **General Standards**: Use `main` branch for universal guidelines
+
+This approach allows you to pull only the standards relevant to your tech stack.
+
 ### Adding Subtrees (Initial Setup)
 
-If you're setting up the repository for the first time or adding new subtrees:
+When setting up the repository, specify the appropriate branch for your tech stack:
 
 ```bash
+# General standards (always use main)
 git subtree add --prefix standards/general https://github.com/EmeaAppGbb/spec2win-guidelines.git main --squash
-git subtree add --prefix standards/frontend https://github.com/EmeaAppGbb/spec2win-guidelines-frontend.git main --squash
-git subtree add --prefix standards/backend https://github.com/EmeaAppGbb/spec2win-guidelines-backend.git main --squash
+
+# Backend standards - choose your stack
+git subtree add --prefix standards/backend https://github.com/EmeaAppGbb/spec2win-guidelines-backend.git dotnet --squash
+# OR
+git subtree add --prefix standards/backend https://github.com/EmeaAppGbb/spec2win-guidelines-backend.git python --squash
+
+# Frontend standards - choose your framework
+git subtree add --prefix standards/frontend https://github.com/EmeaAppGbb/spec2win-guidelines-frontend.git react --squash
+# OR
+git subtree add --prefix standards/frontend https://github.com/EmeaAppGbb/spec2win-guidelines-frontend.git angular --squash
 ```
 
 ### Updating Subtrees
 
-To pull the latest changes from the upstream guideline repositories:
+To pull the latest changes from the upstream guideline repositories, use the same branch:
 
 ```bash
+# Update general standards
 git subtree pull --prefix standards/general https://github.com/EmeaAppGbb/spec2win-guidelines.git main --squash
-git subtree pull --prefix standards/frontend https://github.com/EmeaAppGbb/spec2win-guidelines-frontend.git main --squash
-git subtree pull --prefix standards/backend https://github.com/EmeaAppGbb/spec2win-guidelines-backend.git main --squash
+
+# Update backend standards (use your chosen branch)
+git subtree pull --prefix standards/backend https://github.com/EmeaAppGbb/spec2win-guidelines-backend.git dotnet --squash
+
+# Update frontend standards (use your chosen branch)
+git subtree pull --prefix standards/frontend https://github.com/EmeaAppGbb/spec2win-guidelines-frontend.git react --squash
 ```
 
 > **Note**: The `--squash` flag combines all commits from the subtree repository into a single commit, keeping the history clean.
+
+### Switching Technology Stacks
+
+If you need to switch to a different tech stack (e.g., from React to Angular), remove the old subtree and add the new one:
+
+```bash
+# Remove old subtree
+git rm -r standards/frontend
+git commit -m "Remove React standards"
+
+# Add new subtree
+git subtree add --prefix standards/frontend https://github.com/EmeaAppGbb/spec2win-guidelines-frontend.git angular --squash
+```
 
 ## 🎓 Example Usage
 
@@ -178,16 +252,19 @@ git subtree pull --prefix standards/backend https://github.com/EmeaAppGbb/spec2w
 # Step 2: Break down into features
 /frd
 
-# Step 3: Create technical plans
+# Step 3: Generate agent guidelines from standards (optional, can defer)
+/generate-agents
+
+# Step 4: Create technical plans
 /plan
 
-# Step 4a: Implement locally
+# Step 5a: Implement locally
 /implement
 
-# OR Step 4b: Delegate to GitHub Copilot
+# OR Step 5b: Delegate to GitHub Copilot
 /delegate
 
-# Step 5: Deploy to Azure
+# Step 6: Deploy to Azure
 /deploy
 ```
 

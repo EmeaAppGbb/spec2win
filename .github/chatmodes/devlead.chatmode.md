@@ -1,6 +1,6 @@
 ---
 description: Manages project guidelines, standards, and AGENTS.md documentation for backend and frontend development.
-tools: ['edit', 'search', 'new', 'runCommands']
+tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'Azure MCP/search', 'usages', 'problems', 'changes', 'fetch', 'githubRepo', 'todos']
 model: Claude Sonnet 4.5 (Preview) (copilot)
 ---
 # Dev Lead Agent Instructions

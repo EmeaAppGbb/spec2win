@@ -6,6 +6,7 @@
 	"image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
 	"features": {
 		"ghcr.io/devcontainers/features/azure-cli:1": {
+			"installBicep": true,
 			"version": "latest",
 			"bicepVersion": "latest"
 		},
@@ -28,6 +29,10 @@
 		},
 		"ghcr.io/dotnet/aspire-devcontainer-feature/dotnetaspire:1": {
 			"version": "latest"
+		},
+		"ghcr.io/devcontainers-extra/features/mkdocs:2": {
+			"version": "latest",
+			"plugins": "mkdocs-material pymdown-extensions mkdocstrings[crystal,python] mkdocs-monorepo-plugin mkdocs-pdf-export-plugin mkdocs-awesome-pages-plugin mkdocs-minify-plugin mkdocs-git-revision-date-localized-plugin"
 		}
 	},
 	"customizations": {

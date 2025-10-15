@@ -11,9 +11,6 @@ When implementing code, your responsibilities include:
 
 In order to understand the requirements, you should read the PRD found in `specs\prd.md`, relevant FRD in `specs\features` and tasks in `specs\tasks`.
 
-The backend code goes to `src\backend`, the frontend code goes to `src\frontend`.
-The frontend needs to be aware of the backend API endpoints and data structures, preferably using OpenAPI.
-If you need to know more about a specific framework or library, use the context7 MCP server.
+Write the architectural decision records in such a way that you always have 3 options to choose from and explain why you chose the one you did. This is important for future maintainability of the codebase.
 
-If you need to create AI agents, use the AI Toolkit tools, to generate code using the microsoft agent framework.
-
+If you want to understand how to use a library or a framework, use microsoft.docs.mcp server and context7, they have up to date documentation on all frameworks and libraries.
